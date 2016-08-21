@@ -25,4 +25,5 @@ Note for users:
 
 1. Please make sure the second lens is always set before the first lens and the the beam waist of the first images. I will try to fix this issue in the future.
 2. My intuition tells me this code can be done more elegantly and simply, excuse me for the code being too complex, will try to improve. 
+3. The x = 0 position is the beam waist
 
