@@ -10,6 +10,9 @@ Packages needed:
 numpy 
 matpylot 
 
+How to use: 
+dowload the code GaussianVI.py, and type: python GaussianVI.py on the command line.
+
 For Theory regarding Gaussian Optics, please see the following link:
 http://nic.ucsf.edu/blog/wp-content/uploads/2014/06/Gaussian-Beam-Optics.pdf
 
@@ -21,5 +24,5 @@ Todo list：
 Note for users:
 
 1. Please make sure the second lens is always set before the first lens and the the beam waist of the first images. I will try to fix this issue in the future.
-2. My intuition tells me this code can be done more elegantly and simply, excuse me for the code being too complex, will try to imporve
+2. My intuition tells me this code can be done more elegantly and simply, excuse me for the code being too complex, will try to improve. 
 
