@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 from matplotlib import text
-# define initial setuplength and plot resolution
+# Define initial setuplength and plot resolution
 length = 800.0 
 res = 0.1
 
@@ -42,25 +42,18 @@ f1ini = 50.0
 wini = 0.5
 m1ini = mag(wini,lamda0,f1ini,pos1ini)
 
-# 2nd lens parameter 
+# 2nd lens initial parameter 
 f2ini = 50.0 
 pos2ini = 151.0
 
-# Initialize Plots
+# Compute Initial magnification and beamwaist position
 im1posini = imageposition(wini,lamda0,f1ini,pos1ini)
 im2posini = imageposition(wini*m1ini,lamda0,f2ini,pos2ini-im1posini-pos1ini)
-
 w1ini = m1ini*wini
-
 m2ini = mag(w1ini,lamda0,f2ini,pos2ini-im1posini-pos1ini)
 w2ini = m2ini*w1ini
 
-print w1ini
-print im1posini
-print w2ini
-print im2posini
-print pos2ini-im1posini
-
+# Initialize Plots with initial parameters
 beam1down ,= plt.plot(np.arange(0,pos1ini,res),-beam(wini,lamda0,0.0,pos1ini),color = "Blue")
 beam1up ,= plt.plot(np.arange(0,pos1ini,res),beam(wini,lamda0,0.0,pos1ini),color = "Blue")
 
@@ -90,14 +83,8 @@ im2 ,= plt.plot([pos2ini+im2posini,pos2ini+im2posini], [-w2ini,w2ini])
 
 lens1 ,= plt.plot([pos1ini,pos1ini],[-2,2])
 lens2 ,= plt.plot([pos2ini,pos2ini],[-2,2])
+
 plt.axis([0, length, -2, 2])
-
-
-#beamsizedisplay = text.Annotation(w2ini,xy=(700,1.6)) 
-#ax.add_artist(beamsizedisplay) 
-
-# ax.yaxis.set_ticks_position('both')
-# some color
 
 ax.xaxis.set_ticks(np.arange(0, length, 50))
 ax.yaxis.set_ticks(np.arange(-2.5, 2.5, 0.25))
@@ -106,7 +93,11 @@ ax.tick_params(labeltop=True, labelright=True)
 
 axcolor = 'lightgoldenrodyellow'
 
-# Define lens 1 position slider
+# Define wavelength Slider 
+axlamda  = plt.axes([0.25, 0.35, 0.65, 0.03], axisbg=axcolor)
+slamda = Slider(axlamda, 'wavelent', 200, 1200, valinit=782)
+
+# Define lens position slider
 axpos1  = plt.axes([0.25, 0.25, 0.65, 0.03], axisbg=axcolor)
 axpos2 = plt.axes([0.25, 0.15, 0.65, 0.03], axisbg=axcolor)
 
@@ -127,58 +118,58 @@ sf2 = Slider(axf2, 'lens 2 focus', 0.0, 300, valinit=f2ini)
 
 # Update plots in response to sliders
 def update(val):
-    
+      
+    lamda = slamda.val* 0.000001
+    print lamda
     pos1 = spos1.val
     pos2 = spos2.val
     w0 = sw0.val
     f1 = sf1.val
     f2 = sf2.val
      
-    m1 = mag(w0,lamda0,f1,pos1)   
-    im1pos = imageposition(w0,lamda0,f1,pos1)
+    m1 = mag(w0,lamda,f1,pos1)   
+    im1pos = imageposition(w0,lamda,f1,pos1)
     w1 = m1*w0
     
-    m2 = mag(w1,lamda0,f2,pos2-im1pos-pos1)
-    im2pos = imageposition(w1,lamda0,f2,pos2-im1pos-pos1)
+    m2 = mag(w1,lamda,f2,pos2-im1pos-pos1)
+    im2pos = imageposition(w1,lamda,f2,pos2-im1pos-pos1)
     w2 = m2*w1
       
+    print w2
     lens1.set_data([pos1, pos1], [-2,2])
     lens2.set_data([pos2, pos2], [-2,2])
     
-    beam1up.set_data(np.arange(0.0, pos1,res),np.array(beam(w0,lamda0,0.0,pos1)))      
-    bbeam1up.set_data(np.arange(pos1,pos1+im1pos,res),np.array(backbeam(m1,w0,lamda0,pos1,pos1+im1pos)))
+    beam1up.set_data(np.arange(0.0, pos1,res),np.array(beam(w0,lamda,0.0,pos1)))      
+    bbeam1up.set_data(np.arange(pos1,pos1+im1pos,res),np.array(backbeam(m1,w0,lamda,pos1,pos1+im1pos)))
     
-    beam1down.set_data(np.arange(0.0, pos1,res),-np.array(beam(w0,lamda0,0.0,pos1)))       
-    bbeam1down.set_data(np.arange(pos1,pos1+im1pos,res),-np.array(backbeam(m1,w0,lamda0,pos1,pos1+im1pos)))
+    beam1down.set_data(np.arange(0.0, pos1,res),-np.array(beam(w0,lamda,0.0,pos1)))       
+    bbeam1down.set_data(np.arange(pos1,pos1+im1pos,res),-np.array(backbeam(m1,w0,lamda,pos1,pos1+im1pos)))
     
-    beam2up.set_data(np.arange(pos1+im1pos,pos2,res),np.array(beam(w1,lamda0,pos1+im1pos,pos2)))
-    beam2down.set_data(np.arange(pos1+im1pos,pos2,res),-np.array(beam(w1,lamda0,pos1+im1pos,pos2)))
+    beam2up.set_data(np.arange(pos1+im1pos,pos2,res),np.array(beam(w1,lamda,pos1+im1pos,pos2)))
+    beam2down.set_data(np.arange(pos1+im1pos,pos2,res),-np.array(beam(w1,lamda,pos1+im1pos,pos2)))
     
-    beam3up.set_data(np.arange(pos2+im2pos,length,res),np.array(beam(w2,lamda0,pos2+im2pos,length)))
-    beam3down.set_data(np.arange(pos2+im2pos,length,res),-np.array(beam(w2,lamda0,pos2+im2pos,length)))
+    beam3up.set_data(np.arange(pos2+im2pos,length,res),np.array(beam(w2,lamda,pos2+im2pos,length)))
+    beam3down.set_data(np.arange(pos2+im2pos,length,res),-np.array(beam(w2,lamda,pos2+im2pos,length)))
                                                                       
     bbeam2up.set_data(np.arange(pos2,pos2+im2pos,res),
-                       backbeam(m2,w1,lamda0,pos2,pos2+im2pos))
+                       backbeam(m2,w1,lamda,pos2,pos2+im2pos))
     bbeam2down.set_data(np.arange(pos2,pos2+im2pos,res),
-                       -backbeam(m2,w1,lamda0,pos2,pos2+im2pos))    
-    
-        
+                       -backbeam(m2,w1,lamda,pos2,pos2+im2pos))    
+            
     im1.set_data([im1pos+pos1,im1pos+pos1],[-w1,w1])
     im2.set_data([pos2+im2pos,pos2+im2pos], [-w2,w2])
 
-#    display = text.Annotation(w2,xy=(700,1.6)) 
-#    ax.add_artist(display)
-            
     fig.canvas.draw_idle()
     
-    
-
+# Call the update function once slider changes
 sw0.on_changed(update)    
 spos1.on_changed(update)
 sf1.on_changed(update)
 spos2.on_changed(update)
 sf2.on_changed(update)
+slamda.on_changed(update)
 
+# Define Reset Button
 resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
 button = Button(resetax, 'Reset', color=axcolor, hovercolor='0.975')
 button.on_clicked(reset)
